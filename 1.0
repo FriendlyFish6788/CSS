@@ -1,0 +1,86 @@
+#Primary Input
+#n = int(input("Enter the order for n: "))
+n =3
+largestNumber = n ** 2 + n + 1
+print("The largest number and the number of equations is: ", largestNumber)
+
+#Partition Code
+def partition(n, d, depth=0):
+    if d == depth:
+        return [[]]
+    return [
+        item + [i]
+        for i in range(n+1)
+        for item in partition(n-i, d, depth=depth+1)
+        ]
+
+#Necessary equations
+d = n + 1
+lst = [[largestNumber-sum(p)] + p for p in partition(largestNumber, d-1)]
+finallst = []
+finalfinal = []
+
+#Creating all possible outcomes with 1,2
+for i in range(0, len(lst)):
+    if 1 in lst[i] and 2 in lst[i] and 0 not in lst[i]:
+        finallst.append(lst[i])
+print(finallst)
+#Getting rid of duplicates
+counter = 0
+for i in range(0, len(finallst)):
+    for ele in finallst[i]:
+        if finallst[i].count(ele) > 1:
+            continue
+        else:
+            if counter == (d - 1):
+                finalfinal.append(finallst[i])
+            counter += 1
+    counter = 0
+
+#Creating the array to compare (future)
+def totalNumbers(n):
+    l = []
+    i = 1
+    while i <= largestNumber:
+        l.append(i)
+        i += 1
+    return l
+totNumbers = totalNumbers(n)
+#Testing prints
+print(finalfinal)
+
+#Next code: Needs to append all parts of itself to a new [], and the sum of the numbers inside to that same [], then compare it to totalNumbers(n)
+g = 0
+h = 0
+compareList = [[largestNumber]]
+
+for i in range(0, len(finalfinal) - 1):
+    compareList.append([largestNumber])
+while g < len(finalfinal):
+    if h < d-1:
+        test = finalfinal[g][h] + finalfinal[g][h+1]
+        compareList[g].append(test)
+        h += 1
+    elif h == d-1:
+        test2 = finalfinal[g][h] + finalfinal[g][0]
+        compareList[g].append(test2)
+        h += 1
+    else:
+        g += 1
+        h = 0
+print(compareList)
+lis = []
+c = 0
+for i in range(0, len(compareList)):
+    lis.append(compareList[i] + finalfinal[i])
+
+
+while c < len(compareList):
+    lis[c].sort()
+    if lis[c] == totalNumbers(n):
+        print("The correct orientation is: ", finalfinal[c])
+        c += 1
+    else:
+        c += 1
+        print("oops")
+
