@@ -1,86 +1,92 @@
-#Primary Input
-#n = int(input("Enter the order for n: "))
-n =3
-largestNumber = n ** 2 + n + 1
-print("The largest number and the number of equations is: ", largestNumber)
+#The Code to find Cyclic Sum Sets given the order of n
 
-#Partition Code
-def partition(n, d, depth=0):
-    if d == depth:
-        return [[]]
-    return [
-        item + [i]
-        for i in range(n+1)
-        for item in partition(n-i, d, depth=depth+1)
-        ]
+#Necessary Imports for code
+import itertools
+import timeit
 
-#Necessary equations
-d = n + 1
-lst = [[largestNumber-sum(p)] + p for p in partition(largestNumber, d-1)]
-finallst = []
-finalfinal = []
+#The start of a timer for problem number 16
+start = timeit.default_timer()
 
-#Creating all possible outcomes with 1,2
-for i in range(0, len(lst)):
-    if 1 in lst[i] and 2 in lst[i] and 0 not in lst[i]:
-        finallst.append(lst[i])
-print(finallst)
-#Getting rid of duplicates
-counter = 0
-for i in range(0, len(finallst)):
-    for ele in finallst[i]:
-        if finallst[i].count(ele) > 1:
-            continue
-        else:
-            if counter == (d - 1):
-                finalfinal.append(finallst[i])
-            counter += 1
-    counter = 0
+#Getting order for N and number of Terms
+#N = int(input("enter order of CSS: "))
+N = 7
+n = N*N + N + 1
+terms = N + 1
+potentCSS = set()
+permUnsort = []
+permList = []
+cssList = []
 
-#Creating the array to compare (future)
-def totalNumbers(n):
-    l = []
-    i = 1
-    while i <= largestNumber:
-        l.append(i)
-        i += 1
-    return l
-totNumbers = totalNumbers(n)
-#Testing prints
-print(finalfinal)
+#Code borrowed from Jerome Kelleher to generate partitions efficiently
+def accelAsc(n):
+    a = [0 for i in range(n + 1)]
+    k = 1
+    y = n - 1
+    while k != 0:
+        x = a[k - 1] + 1
+        k -= 1
+        while 2*x <= y:
+            a[k] = x
+            y -= x
+            k += 1
+        l = k + 1
+        while x <= y:
+            a[k] = x
+            a[l] = y
+            yield a[:k + 2]
+            x += 1
+            y -= 1
+        a[k] = x + y
+        y = x + y - 1
+        yield a[:k + 1]
+part = accelAsc(n)
+#Checking through the partitions to check the CSS properties
+for i in part:
+    if (len(i) == terms) and (1 in i) and (2 in i):
+        potentCSS.add(tuple(sorted(i)))
+potCSS = list(potentCSS)
 
-#Next code: Needs to append all parts of itself to a new [], and the sum of the numbers inside to that same [], then compare it to totalNumbers(n)
-g = 0
-h = 0
-compareList = [[largestNumber]]
+#Checking for Duplicates
+filtered = potCSS[:]
+for x in potCSS:
+    seen = []
+    for i in x:
+        if i in seen:
+            if x in filtered:
+                filtered.remove(x)
+        seen.append(i)
+filtPotCSS = filtered
 
-for i in range(0, len(finalfinal) - 1):
-    compareList.append([largestNumber])
-while g < len(finalfinal):
-    if h < d-1:
-        test = finalfinal[g][h] + finalfinal[g][h+1]
-        compareList[g].append(test)
-        h += 1
-    elif h == d-1:
-        test2 = finalfinal[g][h] + finalfinal[g][0]
-        compareList[g].append(test2)
-        h += 1
-    else:
-        g += 1
-        h = 0
-print(compareList)
-lis = []
-c = 0
-for i in range(0, len(compareList)):
-    lis.append(compareList[i] + finalfinal[i])
+#Permutating the Duplicates
+for i in filtPotCSS:
+    permList.append(list(itertools.permutations(i, len(i))))
 
+perms = permList
 
-while c < len(compareList):
-    lis[c].sort()
-    if lis[c] == totalNumbers(n):
-        print("The correct orientation is: ", finalfinal[c])
-        c += 1
-    else:
-        c += 1
-        print("oops")
+#Code that checks for CSS property. Borrowed from zdobrenen
+def isCSS(L):
+    seen = []
+    n = len(L)
+    for i in range(1,n):
+        for start in range(0,n):
+            Sum = 0
+            for j in range(0,i):
+                Sum = Sum + L[(start + j)%n]
+            if Sum in seen:
+                return False
+            seen.append(Sum)
+    return True
 
+#Checks the potential orientations for if they are a CSS
+for listPerms in perms:
+    for j in listPerms:
+        if isCSS(j) == True:
+            css = []
+            css.append(j)
+            cssList.append(css)
+
+#Prints out the final CSS
+for i in cssList:
+    print(i)
+stop = timeit.default_timer()
+print(stop - start)
