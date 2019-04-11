@@ -5,7 +5,7 @@ import itertools
 import timeit
 
 #The start of a timer for problem number 16
-start = timeit.default_timer()
+
 
 #Getting order for N and number of Terms
 N = int(input("enter order of CSS: "))
@@ -19,6 +19,9 @@ cssList = []
 notUniq = []
 potUniq = []
 Uniq = []
+
+start = timeit.default_timer()
+
 #Code borrowed from Jerome Kelleher to generate partitions efficiently
 def accelAsc(n):
     a = [0 for i in range(n + 1)]
@@ -43,65 +46,25 @@ def accelAsc(n):
         yield a[:k + 1]
 part = accelAsc(n)
 
+def NumDup(n):
+    for x in n:
+        seen = []
+        for i in x:
+            if i in seen:
+                if x in n:
+                    n.remove(x)
+                    break
+            seen.append(i)
+    return n
 
+def filtCopy(n):
+    permList = []
+    for x in n:
+        for y in x:
+            if y[0] == 1:
+                permList.append(y)
+    return permList
 
-#Checking through the partitions to check the CSS properties
-#and i not in potentCSS
-#create these lists but appending next numbers??
-
-for i in part:
-    if (len(i) == terms) and (1 in i) and (2 in i):
-        potentCSS.add(tuple(sorted(i)))
-potCSS = list(potentCSS)
-
-#Checking for Duplicates
-filtered = potCSS[:]
-
-for x in filtered:
-    seen = []
-    for i in x:
-        if i in seen:
-            if x in filtered:
-                filtered.remove(x)
-                break
-        seen.append(i)
-filtPotCSS = filtered
-
-#print(filtPotCSS)
-
-#Permutating the Duplicates
-for i in filtPotCSS:
-    permUnsortbig.append(list(itertools.permutations(i, len(i))))
-    #print(permUnsortbig)
-#print("break")
-#print(permUnsortbig)
-permUnsort = permUnsortbig[:]
-#print(permUnsort)
-#print(len(permUnsort))
-#while q < len(permUnsort)-1:
-#print("break1.5")
-#print(permUnsort)
-#aa = permUnsort[0][0][0]
-#print(aa)
-
-q = 0
-for x in permUnsort:
-   # q = 0
-    for y in x:
-        q = 0
-        #while q <= len(y)-1:
-            #print("break")
-            #print(len(y))
-        if y[0] == 1:
-                #print("True")
-            permList.append(y)
-            #q += 1
-
-permList2 = []
-permList2.append(permList)
-perms = permList2
-
-#Code that checks for CSS property. Borrowed from zdobrenen
 def isCSS(L):
     seen = []
     n = len(L)
@@ -115,30 +78,60 @@ def isCSS(L):
             seen.append(Sum)
     return True
 
-#Checks the potential orientations for if they are a CSS
+def UniqCSS(n):
+    notUniq = []
+    for i in n:
+        for j in i:
+            if isCSS(j) == True:
+                css = []
+                css.append(j)
+                notUniq.append(css)
+    b = len(notUniq)
+    potUniq = []
+    Uniq = []
+    for x in notUniq:
+        if x[0][1:b] and x[0][b:0:-1] not in potUniq or not Uniq:
+            potUniq.append(x[0][b:0: -1])
+            potUniq.append(x[0][1:b])
+            Uniq.append(x)
+    return Uniq
 
-for listPerms in perms:
-    for j in listPerms:
-        if isCSS(j) == True:
-            css = []
-            css.append(j)
-            notUniq.append(css)
 
-#This gives nonuniqes
+#Checking through the partitions to check the CSS properties
+#and i not in potentCSS
+#create these lists but appending next numbers??
 
-aa = 1
-bb = len(notUniq)
-potUniq = []
-#Prints out the final CSS
+for i in part:
+    if (len(i) == terms) and (1 in i) and (2 in i):
+        potentCSS.add(tuple(sorted(i)))
 
-for x in notUniq:
-    if x[0][1:bb] and x[0][bb:0:-1] not in potUniq or not Uniq:
-        potUniq.append(x[0][bb:0: -1])
-        potUniq.append(x[0][1:bb])
-        Uniq.append(x)
-#
+
+potCSS = list(potentCSS)
+filtered = potCSS[:]
+filtPotCSS = NumDup(filtered)
+
+permList2 = []
+print(len(filtPotCSS))
+#Permutating the Duplicates
+for i in filtPotCSS:
+    permUnsortbig = []
+    permUnsortbig.append(list(itertools.permutations(i, len(i))))
+    #print("break")
+    #print(len(permUnsortbig[0]))
+    permUnsort = permUnsortbig[:]
+    permList = filtCopy(permUnsort)
+    #print(len(permList))
+    permList2.append(permList)
+    Left = len(filtPotCSS) - filtPotCSS.index(i) + 1
+    print("Left: ", Left)
+
+
+perms = permList2
+
+
+
 p = 1
-for i in Uniq:
+for i in UniqCSS(perms):
     print("CSS of order " + str(N) + " number " + str(p), i)
     int(p)
     p += 1
