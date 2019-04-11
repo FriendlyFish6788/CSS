@@ -19,6 +19,7 @@ cssList = []
 notUniq = []
 potUniq = []
 Uniq = []
+p = 1
 
 start = timeit.default_timer()
 
@@ -96,6 +97,10 @@ def UniqCSS(n):
             Uniq.append(x)
     return Uniq
 
+def trueCSS(n):
+    for i in n:
+        print("Passed! ", i)
+
 
 #Checking through the partitions to check the CSS properties
 #and i not in potentCSS
@@ -124,9 +129,10 @@ for i in filtPotCSS:
     permList2.append(permList)
     Left = len(filtPotCSS) - filtPotCSS.index(i) + 1
     print("Left: ", Left)
-
-
+    
+    
 perms = permList2
+trueCSS(UniqCSS(perms))
 
 
 
