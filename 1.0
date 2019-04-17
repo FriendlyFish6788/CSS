@@ -64,6 +64,8 @@ def filtCopy(n):
         for y in x:
             if y[0] == 1:
                 permList.append(y)
+            #else:
+                #x.remove(y)
     return permList
 
 def isCSS(L):
@@ -101,6 +103,10 @@ def trueCSS(n):
     for i in n:
         print("Passed! ", i)
 
+import datetime
+
+def convert(n):
+    return str(datetime.timedelta(seconds = n))
 
 #Checking through the partitions to check the CSS properties
 #and i not in potentCSS
@@ -108,38 +114,47 @@ def trueCSS(n):
 
 for i in part:
     if (len(i) == terms) and (1 in i) and (2 in i):
-        potentCSS.add(tuple(sorted(i)))
+        potentCSS.add(tuple(i))
 
 
 potCSS = list(potentCSS)
+#print this
 filtered = potCSS[:]
 filtPotCSS = NumDup(filtered)
 
 permList2 = []
 print(len(filtPotCSS))
+y = len(filtPotCSS)
+q = 1
+
+
 #Permutating the Duplicates
-for i in filtPotCSS:
+def all(filtPotCSS):
+    q = 1
     permUnsortbig = []
-    permUnsortbig.append(list(itertools.permutations(i, len(i))))
-    #print("break")
-    #print(len(permUnsortbig[0]))
-    permUnsort = permUnsortbig[:]
-    permList = filtCopy(permUnsort)
-    #print(len(permList))
-    permList2.append(permList)
-    Left = len(filtPotCSS) - filtPotCSS.index(i) + 1
-    print("Left: ", Left)
-    
-    
-perms = permList2
-trueCSS(UniqCSS(perms))
+    permUnsort = []
+    permList =[]
+    for i in filtPotCSS:
+        permUnsortbig.append(list(itertools.permutations(i, len(i))))
+        permUnsort = permUnsortbig[:]
+        permList = filtCopy(permUnsort)
+        permList2.append(permList)
+        Left = y - q
+        print("Left: ", Left)
+        perms = permList2
+        trueCSS(UniqCSS(perms))
+        filtPotCSS.remove(i)
+        q += 1
+        permUnsortbig = []
+        permUnsort = []
+        permList = []
 
+all(filtPotCSS)
 
-
-p = 1
-for i in UniqCSS(perms):
-    print("CSS of order " + str(N) + " number " + str(p), i)
-    int(p)
-    p += 1
+#p = 1
+#for i in UniqCSS(perms):
+ #   print("CSS of order " + str(N) + " number " + str(p), i)
+  #  int(p)
+   # p += 1
 stop = timeit.default_timer()
 print(stop - start)
