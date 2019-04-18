@@ -1,29 +1,9 @@
-#The Code to find Cyclic Sum Sets given the order of n
-
-#Necessary Imports for code
 import itertools
-import timeit
 
-#The start of a timer for problem number 16
-
-
-#Getting order for N and number of Terms
 N = int(input("enter order of CSS: "))
 n = N*N + N + 1
 terms = N + 1
-potentCSS = set()
-permUnsort = []
-permUnsortbig = []
-permList = []
-cssList = []
-notUniq = []
-potUniq = []
-Uniq = []
-p = 1
 
-start = timeit.default_timer()
-
-#Code borrowed from Jerome Kelleher to generate partitions efficiently
 def accelAsc(n):
     a = [0 for i in range(n + 1)]
     k = 1
@@ -45,27 +25,20 @@ def accelAsc(n):
         a[k] = x + y
         y = x + y - 1
         yield a[:k + 1]
-part = accelAsc(n)
 
 def NumDup(n):
-    for x in n:
-        seen = []
-        for i in x:
-            if i in seen:
-                if x in n:
-                    n.remove(x)
-                    break
-            seen.append(i)
-    return n
+    noDups = []
+    for i in n:
+        if len(list(set(i))) == terms:
+            noDups.append(i)
+    return noDups
 
 def filtCopy(n):
     permList = []
     for x in n:
-        for y in x:
-            if y[0] == 1:
-                permList.append(y)
-            #else:
-                #x.remove(y)
+        for i in x:
+            if i[0] == 1:
+                permList.append(x)
     return permList
 
 def isCSS(L):
@@ -83,78 +56,56 @@ def isCSS(L):
 
 def UniqCSS(n):
     notUniq = []
+    #n = filtCopy(n)
     for i in n:
         for j in i:
             if isCSS(j) == True:
                 css = []
                 css.append(j)
                 notUniq.append(css)
+                print("True")
     b = len(notUniq)
     potUniq = []
     Uniq = []
     for x in notUniq:
-        if x[0][1:b] and x[0][b:0:-1] not in potUniq or not Uniq:
-            potUniq.append(x[0][b:0: -1])
-            potUniq.append(x[0][1:b])
+        c = x[0][1:b]
+        d = x[0][b:0:-1]
+        if c and d not in (potUniq or Uniq):
+            potUniq.append(c)
+            potUniq.append(d)
             Uniq.append(x)
     return Uniq
 
-def trueCSS(n):
+def it(n):
     for i in n:
-        print("Passed! ", i)
+        yield list(itertools.permutations(i, len(i)))
 
-import datetime
+def CSS(perms):
+    cssList = []
+    for listPerms in perms:
+        for j in listPerms:
+            if isCSS(j) == True:
+                css = []
+                css.append(j)
+                css.append(isCSS(j))
+                cssList.append(css)
+                print("true")
+    return cssList
 
-def convert(n):
-    return str(datetime.timedelta(seconds = n))
+possWithDups = []
+possNoDups = []
+perms = accelAsc(n)
 
-#Checking through the partitions to check the CSS properties
-#and i not in potentCSS
-#create these lists but appending next numbers??
-
-for i in part:
+for i in perms:
     if (len(i) == terms) and (1 in i) and (2 in i):
-        potentCSS.add(tuple(i))
+        possWithDups.append(i)
 
+possNoDups = NumDup(possWithDups)
+genPerm = it(possNoDups)
 
-potCSS = list(potentCSS)
-#print this
-filtered = potCSS[:]
-filtPotCSS = NumDup(filtered)
-
-permList2 = []
-print(len(filtPotCSS))
-y = len(filtPotCSS)
-q = 1
-
-
-#Permutating the Duplicates
-def all(filtPotCSS):
-    q = 1
-    permUnsortbig = []
-    permUnsort = []
-    permList =[]
-    for i in filtPotCSS:
-        permUnsortbig.append(list(itertools.permutations(i, len(i))))
-        permUnsort = permUnsortbig[:]
-        permList = filtCopy(permUnsort)
-        permList2.append(permList)
-        Left = y - q
-        print("Left: ", Left)
-        perms = permList2
-        trueCSS(UniqCSS(perms))
-        filtPotCSS.remove(i)
-        q += 1
-        permUnsortbig = []
-        permUnsort = []
-        permList = []
-
-all(filtPotCSS)
-
-#p = 1
-#for i in UniqCSS(perms):
- #   print("CSS of order " + str(N) + " number " + str(p), i)
-  #  int(p)
-   # p += 1
-stop = timeit.default_timer()
-print(stop - start)
+preFinal = []
+finalCSS = []
+for i in genPerm:
+    if i not in finalCSS:
+        preFinal.append(i)
+print(filtCopy(UniqCSS(preFinal)))
