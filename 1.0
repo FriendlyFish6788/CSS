@@ -39,6 +39,7 @@ def filtCopy(n):
         for i in x:
             if i[0] == 1:
                 permList.append(x)
+    #if length not 0, print
     return permList
 
 def isCSS(L):
@@ -63,7 +64,6 @@ def UniqCSS(n):
                 css = []
                 css.append(j)
                 notUniq.append(css)
-                print("True")
     b = len(notUniq)
     potUniq = []
     Uniq = []
@@ -99,13 +99,24 @@ perms = accelAsc(n)
 for i in perms:
     if (len(i) == terms) and (1 in i) and (2 in i):
         possWithDups.append(i)
+print("Part 1 done!")
 
 possNoDups = NumDup(possWithDups)
 genPerm = it(possNoDups)
 
+
+#Work on this part
 preFinal = []
+mid = []
 finalCSS = []
 for i in genPerm:
     if i not in finalCSS:
         preFinal.append(i)
-print(filtCopy(UniqCSS(preFinal)))
+        mid = filtCopy(UniqCSS(preFinal))
+        if len(mid) != 0:
+            finalCSS.append(filtCopy(UniqCSS(preFinal)))
+        preFinal = []
+
+print(finalCSS)
+print("Part 2 done!")
+
